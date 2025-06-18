@@ -25,6 +25,25 @@ import {
 } from "lucide-react"
 import { getTalents, getTalentActivities, getSnsStats, getWeeklyGoals } from "@/app/actions"
 
+// 週番号を取得する関数
+function getWeekNumber(date: Date): [number, number] {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+  const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+  return [weekNo, d.getUTCFullYear()]
+}
+
+// 現在の週番号を取得
+function getCurrentWeekNumber(): number {
+  return getWeekNumber(new Date())[0]
+}
+
+// 現在の年を取得
+function getCurrentYear(): number {
+  return getWeekNumber(new Date())[1]
+}
+
 // 型定義
 type Talent = {
   id: number
@@ -75,31 +94,21 @@ type TalentWithDetails = {
   weeklyGoal: WeeklyGoal | null
 }
 
+// SNSプラットフォーム名の定数
+const PLATFORMS = {
+  INSTAGRAM: "instagram",
+  TIKTOK: "tiktok",
+  TWITTER: "twitter"
+};
+
 export default function TalentDashboard() {
   const [talents, setTalents] = useState<TalentWithDetails[]>([])
   const [loading, setLoading] = useState(true)
-  // 現在の週と年を初期値に設定（ハードコード値を使用）
-  const [currentWeek, setCurrentWeek] = useState(3)
-  const [currentYear, setCurrentYear] = useState(2024)
-
-  // 週番号を取得する関数
-  const getWeekNumber = (date: Date): [number, number] => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
-    return [weekNo, d.getUTCFullYear()]
-  }
-
-  // 現在の週番号を取得
-  const getCurrentWeekNumber = (): number => {
-    return getWeekNumber(new Date())[0]
-  }
-
-  // 現在の年を取得
-  const getCurrentYear = (): number => {
-    return getWeekNumber(new Date())[1]
-  }
+  const [error, setError] = useState<string | null>(null)
+  
+  // 現在の週と年を初期値に設定（現在の日付から計算）
+  const [currentWeek, setCurrentWeek] = useState(getCurrentWeekNumber())
+  const [currentYear, setCurrentYear] = useState(getCurrentYear())
 
   // ステータスに応じた色を返す関数
   const getStatusColor = (status: string): string => {
@@ -171,8 +180,9 @@ export default function TalentDashboard() {
 
   // データ取得
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       setLoading(true)
+      setError(null)
       try {
         const talentsData = await getTalents()
 
@@ -208,6 +218,7 @@ export default function TalentDashboard() {
         setTalents(talentDetails)
       } catch (error) {
         console.error('タレントデータの取得に失敗しました:', error)
+        setError('データの取得中にエラーが発生しました。再読み込みしてください。')
       } finally {
         setLoading(false)
       }
@@ -262,6 +273,13 @@ export default function TalentDashboard() {
           </h1>
           <p className="text-gray-600">週次活動状況とSNS成長の管理</p>
         </div>
+
+        {/* エラーメッセージ */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+        )}
 
         {/* 週選択 */}
         <div className="flex items-center justify-center mb-8 space-x-4">
@@ -400,9 +418,9 @@ export default function TalentDashboard() {
                     <div className="text-center p-3 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-pink-100">
                       <Instagram className="w-5 h-5 text-pink-600 mx-auto mb-1" />
                       <div className="text-sm font-semibold text-gray-900">
-                        {formatFollowers(talent.snsStats.find(s => s.platform === "instagram")?.followers || 0)}
+                        {formatFollowers(talent.snsStats.find(s => s.platform === PLATFORMS.INSTAGRAM)?.followers || 0)}
                       </div>
-                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "instagram")?.growth || 0} />
+                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === PLATFORMS.INSTAGRAM)?.growth || 0} />
                     </div>
                     
                     <div className="text-center p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
@@ -410,17 +428,17 @@ export default function TalentDashboard() {
                         TT
                       </div>
                       <div className="text-sm font-semibold text-gray-900">
-                        {formatFollowers(talent.snsStats.find(s => s.platform === "tiktok")?.followers || 0)}
+                        {formatFollowers(talent.snsStats.find(s => s.platform === PLATFORMS.TIKTOK)?.followers || 0)}
                       </div>
-                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "tiktok")?.growth || 0} />
+                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === PLATFORMS.TIKTOK)?.growth || 0} />
                     </div>
                     
                     <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg border border-blue-100">
                       <Twitter className="w-5 h-5 text-blue-600 mx-auto mb-1" />
                       <div className="text-sm font-semibold text-gray-900">
-                        {formatFollowers(talent.snsStats.find(s => s.platform === "twitter")?.followers || 0)}
+                        {formatFollowers(talent.snsStats.find(s => s.platform === PLATFORMS.TWITTER)?.followers || 0)}
                       </div>
-                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "twitter")?.growth || 0} />
+                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === PLATFORMS.TWITTER)?.growth || 0} />
                     </div>
                   </div>
                 </div>
