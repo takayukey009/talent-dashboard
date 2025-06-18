@@ -240,7 +240,7 @@ export async function getSnsStats(talentId: number, weekNumber?: number, year?: 
       return mockSnsStats.filter(stat => stat.talent_id === talentId)
     }
 
-    return data || []
+    return data || mockSnsStats.filter(stat => stat.talent_id === talentId)
   } catch (error) {
     console.error("Error in getSnsStats:", error)
     return mockSnsStats.filter(stat => stat.talent_id === talentId)
