@@ -217,6 +217,8 @@ export async function getTalentActivities(talentId: number, weekNumber?: number,
 // 特定のタレントのSNS統計を取得
 export async function getSnsStats(talentId: number, weekNumber?: number, year?: number): Promise<SnsStats[]> {
   try {
+    console.log(`Fetching SNS stats for talent ${talentId}, week ${weekNumber}, year ${year}`);
+    
     if (!isSupabaseConfigured()) {
       console.log("Using mock data for SNS stats")
       return mockSnsStats.filter(stat => stat.talent_id === talentId)
@@ -240,6 +242,8 @@ export async function getSnsStats(talentId: number, weekNumber?: number, year?: 
       return mockSnsStats.filter(stat => stat.talent_id === talentId)
     }
 
+    console.log(`SNS stats data for talent ${talentId}:`, data);
+    
     return data || mockSnsStats.filter(stat => stat.talent_id === talentId)
   } catch (error) {
     console.error("Error in getSnsStats:", error)
