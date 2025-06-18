@@ -400,9 +400,9 @@ export default function TalentDashboard() {
                     <div className="text-center p-3 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-pink-100">
                       <Instagram className="w-5 h-5 text-pink-600 mx-auto mb-1" />
                       <div className="text-sm font-semibold text-gray-900">
-                        {formatFollowers(talent.snsStats.find(s => s.platform === "Instagram")?.followers || 0)}
+                        {formatFollowers(talent.snsStats.find(s => s.platform === "instagram")?.followers || 0)}
                       </div>
-                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "Instagram")?.growth || 0} />
+                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "instagram")?.growth || 0} />
                     </div>
                     
                     <div className="text-center p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
@@ -410,17 +410,17 @@ export default function TalentDashboard() {
                         TT
                       </div>
                       <div className="text-sm font-semibold text-gray-900">
-                        {formatFollowers(talent.snsStats.find(s => s.platform === "TikTok")?.followers || 0)}
+                        {formatFollowers(talent.snsStats.find(s => s.platform === "tiktok")?.followers || 0)}
                       </div>
-                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "TikTok")?.growth || 0} />
+                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "tiktok")?.growth || 0} />
                     </div>
                     
                     <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg border border-blue-100">
                       <Twitter className="w-5 h-5 text-blue-600 mx-auto mb-1" />
                       <div className="text-sm font-semibold text-gray-900">
-                        {formatFollowers(talent.snsStats.find(s => s.platform === "Twitter")?.followers || 0)}
+                        {formatFollowers(talent.snsStats.find(s => s.platform === "twitter")?.followers || 0)}
                       </div>
-                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "Twitter")?.growth || 0} />
+                      <GrowthIndicator growth={talent.snsStats.find(s => s.platform === "twitter")?.growth || 0} />
                     </div>
                   </div>
                 </div>
